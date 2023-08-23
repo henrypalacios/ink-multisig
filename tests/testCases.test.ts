@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import Constructors from "../typed_contracts/constructors/multisig";
-import Contract from "../typed_contracts/contracts/multisig";
+import Constructors from "../typed_contracts/multisig/constructors/multisig";
+import Contract from "../typed_contracts/multisig/contracts/multisig";
 import { ApiPromise, WsProvider, Keyring } from "@polkadot/api";
-import ContractAbi from "../artifacts/multisig.json";
-import { Transaction } from "../typed_contracts/types-arguments/multisig";
+import ContractAbi from "../artifacts/multisig/multisig.json";
+import { Transaction } from "../typed_contracts/multisig/types-arguments/multisig";
 import { MessageIndex } from "./utils/MessageIndex";
 import { hex_to_bytes } from "./utils/convertions";
 
@@ -69,7 +69,7 @@ describe("Case 1", () => {
     // Get the arguments for the proposeTx contract call
 
     // Get the selector of the add_owner message
-    const selector = multisigMessageIndex.getSelectorByLabel("add_owner");
+    const selector = multisigMessageIndex.getMessageInfo("add_owner")?.selector.bytes;
 
     // Create the argument for the add_owner message in the specified format
     const arg = api.createType("AccountId", daveKeyringPair.address);
@@ -151,7 +151,7 @@ describe("Case 2", () => {
     // Get the arguments for the proposeTx contract call
 
     // Get the selector of the add_owner message
-    const selector = multisigMessageIndex.getSelectorByLabel("add_owner");
+    const selector = multisigMessageIndex.getMessageInfo("add_owner")?.selector.bytes;
 
     // Create the argument for the add_owner message in the specified format
     const arg = api.createType("AccountId", daveKeyringPair.address);
@@ -191,7 +191,7 @@ describe("Case 2", () => {
     // so it is not executed and automatically removed
     const tx_0 = (await multisig.query.getTx(0)).value.ok;
     expect(tx_0).to.not.exist;
-    
+
     // Dave is not added as a new owner
     const newOwners = (await multisig.query.getOwners()).value.unwrap();
     expect(newOwners).to.have.lengthOf(3);
